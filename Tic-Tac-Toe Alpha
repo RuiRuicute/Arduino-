@@ -1,0 +1,73 @@
+int choose_row = 0;     //暫存器直排
+int choose_column =0;   //暫存器橫排
+int where[2]={'?','?'};     //選擇到的座標
+int O_or_X ='?';        //輪到O或X設為None
+char flash_input;       //定義flash_input為位元
+char ask_where[2]={' ',' '};        //座標暫存器
+char block[4][3]={      //九宮格
+    {' ','O','X'},
+    {'X','O','O'},
+    {'X','O','X'},
+    {' '},
+};
+void referee(){ //偵測輸贏
+  int i = 0;
+  Serial.println("");
+    for (int count = 1; count < 4; count++) {
+    if ((block[i][0] == block[i][1] && (block[i][1] == block[i][2] && block[i][0] == block[i][2])) && block[i][0] != block[3][0]) {
+      Serial.print((String(block[i][0]) + String(u8"獲勝")));
+      return 0;
+    };
+    i = i + 1;
+    };
+  i = 0;
+  for (int count = 1; count < 4; count++) {
+    if ((block[0][i] == block[1][i] && (block[1][i] == block[2][i] && block[0][i] == block[2][i])) && block[0][i] != block[3][0]) {
+      Serial.print((String(block[0][i]) + String(u8"獲勝")));
+      return 0;
+    };
+    i = i + 1;
+  };
+  if ((block[0][0] == block[1][1] && (block[1][1] == block[2][2] && block[0][0] == block[2][2])) && block[0][0] != block[3][0]) {
+    Serial.print((String(block[0][0]) + String(u8"獲勝")));
+  };
+  if ((block[0][2] == block[1][1] && (block[1][1] == block[2][0] && block[2][0] == block[0][2])) && block[0][2] != block[3][0]) {
+    Serial.print((String(block[0][2]) + String(u8"獲勝")));
+  };
+}
+void show(){    //呈現答案
+  String Line1 = String(u8"|") + String(block[0][0]) + String(u8"|") + String(block[0][1]) + String(u8"|") + String(block[0][2])+String(u8"|");
+  String Line2 = String(u8"|") + String(block[1][0]) + String(u8"|") + String(block[1][1]) + String(u8"|") + String(block[1][2])+String(u8"|");
+  String Line3 = String(u8"|") + String(block[2][0]) + String(u8"|") + String(block[2][1]) + String(u8"|") + String(block[2][2])+String(u8"|");
+  Serial.println(" A B C");
+  Serial.println(" - - -");
+  Serial.println(Line1);
+  Serial.println(Line2);
+  Serial.println(Line3);
+}
+void setup(){
+  byte inputPin = 2;
+  Serial.begin(9600);
+  while(inputPin<=10){
+    pinMode(inputPin,INPUT_PULLUP);
+    inputPin++;
+  };
+  Serial.print("設定完成");
+  Serial.println("");
+}
+void loop(){
+  byte detectPin = 2;
+    while(detectPin <= 10){
+      if(digitalRead( detectPin )==LOW){
+        Serial.println("");
+        Serial.print("按鈕");
+        Serial.print( detectPin-1 );
+        Serial.print("被按下");
+        while(digitalRead( detectPin )==LOW){
+        delay(500);
+        };
+        referee();
+      };
+      detectPin++;
+    };
+}
